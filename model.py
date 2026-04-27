@@ -120,3 +120,4 @@ with st.expander("📌 About Project"):
     Built using Python, Scikit-learn, and Streamlit.
     """)
 
+st.caption("🚀 Built with Streamlit | Ready for GitHub & Viva")
