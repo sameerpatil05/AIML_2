@@ -1,22 +1,39 @@
-# app.py — Customer Purchase Amount Predictor
-# Run: streamlit run app.py
-
 import numpy as np
 import pandas as pd
 import streamlit as st
-from sklearn.linear_model    import LinearRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics         import mean_absolute_error, mean_squared_error, r2_score
 
-st.set_page_config(page_title="Customer Purchase Predictor", page_icon="🛒")
+st.set_page_config(page_title="Customer Purchase Predictor", page_icon="🛒", layout="wide")
 
-# ── Train model from dataset (no pkl needed) ──────────────────
+# ── Custom Styling ────────────────────────────────────────────
+st.markdown("""
+    <style>
+        .main-title {
+            font-size: 40px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .sub-text {
+            font-size: 18px;
+            color: #555;
+        }
+        .card {
+            padding: 20px;
+            border-radius: 15px;
+            background-color: #1e1e1e;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# ── Train model ───────────────────────────────────────────────
 @st.cache_resource
 def train_model():
     df = pd.read_csv("dataset.csv")
-    X  = df[["Age","Annual_Income_LPA","Time_On_Website",
-              "Products_Browsed","Discount_Availed"]]
-    y  = df["Purchase_Amount"]
+    X = df[["Age","Annual_Income_LPA","Time_On_Website",
+            "Products_Browsed","Discount_Availed"]]
+    y = df["Purchase_Amount"]
     X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
     model = LinearRegression()
     model.fit(X_train, y_train)
@@ -27,57 +44,73 @@ def load_data():
     return pd.read_csv("dataset.csv")
 
 model = train_model()
-df    = load_data()
+df = load_data()
 
-# ── Title ─────────────────────────────────────────────────────
-st.title("🛒 Customer Purchase Amount Predictor")
-st.write("Enter customer details to predict the **Purchase Amount in INR**.")
+# ── Header ────────────────────────────────────────────────────
+st.markdown('<div class="main-title">🛒 Customer Purchase Predictor</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-text">Predict how much a customer is likely to spend based on behavior and demographics.</div>', unsafe_allow_html=True)
 st.divider()
 
-# ── Inputs ────────────────────────────────────────────────────
-age      = st.number_input("🧑 Age",                       min_value=18,  max_value=65,   value=30,   step=1)
-income   = st.number_input("💰 Annual Income (in LPA)",    min_value=2.0, max_value=25.0, value=8.0,  step=0.5)
-time_web = st.number_input("🌐 Time on Website (minutes)", min_value=5.0, max_value=60.0, value=25.0, step=1.0)
-products = st.number_input("📦 Products Browsed",          min_value=1,   max_value=30,   value=15,   step=1)
-discount = st.number_input("🏷️ Discount Availed (%)",      min_value=0.0, max_value=30.0, value=10.0, step=0.5)
-st.divider()
+# ── Sidebar Inputs ────────────────────────────────────────────
+st.sidebar.header("📥 Enter Customer Details")
 
-# ── Predict ───────────────────────────────────────────────────
-if st.button("🔮 Predict Purchase Amount", use_container_width=True):
-    input_df = pd.DataFrame(
-        [[age, income, time_web, products, discount]],
-        columns=["Age","Annual_Income_LPA","Time_On_Website",
-                 "Products_Browsed","Discount_Availed"]
-    )
-    prediction = float(np.clip(model.predict(input_df)[0], 500, 25000))
+age = st.sidebar.slider("Age", 18, 65, 30)
+income = st.sidebar.slider("Annual Income (LPA)", 2.0, 25.0, 8.0)
+time_web = st.sidebar.slider("Time on Website (mins)", 5.0, 60.0, 25.0)
+products = st.sidebar.slider("Products Browsed", 1, 30, 15)
+discount = st.sidebar.slider("Discount Availed (%)", 0.0, 30.0, 10.0)
 
-    st.success(f"### 💳 Predicted Purchase Amount: ₹{prediction:,.0f}")
+predict_btn = st.sidebar.button("🔮 Predict")
 
-    if prediction >= 15000:
-        category = "🔥 High Value"
-    elif prediction >= 8000:
-        category = "✅ Medium Value"
+# ── Main Layout ───────────────────────────────────────────────
+col1, col2 = st.columns([2,1])
+
+with col1:
+    st.markdown("### 📊 Prediction Result")
+
+    if predict_btn:
+        input_df = pd.DataFrame(
+            [[age, income, time_web, products, discount]],
+            columns=["Age","Annual_Income_LPA","Time_On_Website",
+                     "Products_Browsed","Discount_Availed"]
+        )
+
+        prediction = float(np.clip(model.predict(input_df)[0], 500, 25000))
+
+        st.success(f"### 💳 ₹{prediction:,.0f}")
+
+        if prediction >= 15000:
+            category = "🔥 High Value"
+        elif prediction >= 8000:
+            category = "✅ Medium Value"
+        else:
+            category = "💡 Low Value"
+
+        colA, colB, colC = st.columns(3)
+        colA.metric("Customer Segment", category)
+        colB.metric("Purchase", f"₹{prediction:,.0f}")
+        colC.metric("GST (18%)", f"₹{prediction * 0.18:,.0f}")
+
     else:
-        category = "💡 Low Value"
+        st.info("👈 Enter values in sidebar and click Predict")
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Customer Segment", category)
-    col2.metric("Purchase Amount",  f"₹{prediction:,.0f}")
-    col3.metric("Est. GST (18%)",   f"₹{prediction * 0.18:,.0f}")
+# ── Side Info Panel ───────────────────────────────────────────
+with col2:
+    st.markdown("### 📈 Model Info")
+    st.write("""
+    - Algorithm: Linear Regression  
+    - Accuracy (R²): **97.20%**  
+    - MAE: ₹401  
+    """)
 
-# ── Model Metrics ─────────────────────────────────────────────
-with st.expander("📈 Model Metrics"):
-    st.write("**Test Set Evaluation (20% data)**")
-    st.divider()
-    col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("MAE",  "₹401")
-    col2.metric("MSE",  "₹2,56,491")
-    col3.metric("RMSE", "₹506")
-    col4.metric("R²",   "97.20%")
-    col5.metric("MAPE", "3.25%")
+# ── Expanders ─────────────────────────────────────────────────
+with st.expander("📊 View Dataset"):
+    st.dataframe(df.head(20), use_container_width=True)
 
-# ── Dataset ───────────────────────────────────────────────────
-with st.expander("🗂️ View Dataset"):
-    st.dataframe(df.head(20), use_container_width=True, hide_index=True)
+with st.expander("📌 About Project"):
+    st.write("""
+    This project predicts customer purchase amount using Machine Learning.
+    Built using Python, Scikit-learn, and Streamlit.
+    """)
 
-st.caption("Built with Python · Scikit-learn · Streamlit")
+st.caption("🚀 Built with Streamlit | Ready for GitHub & Viva")
