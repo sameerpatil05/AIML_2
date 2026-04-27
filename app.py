@@ -79,29 +79,29 @@ with col1:
 
         # Customer Category
         if prediction >= 15000:
-            category = "🔥 High Value"
+            category = " High Value"
         elif prediction >= 8000:
-            category = "✅ Medium Value"
+            category = "Medium Value"
         else:
-            category = "💡 Low Value"
+            category = " Low Value"
 
         colA, colB = st.columns(2)
         colA.metric("Customer Segment", category)
         colB.metric("Purchase Amount", f"₹{prediction:,.0f}")
 
         # Input Summary
-        st.markdown("### 🧾 Input Summary")
+        st.markdown("###  Input Summary")
         st.dataframe(input_df, use_container_width=True)
 
         # Note
         st.caption("Note: Output varies based on input values. Example values in report are for demonstration.")
 
     else:
-        st.info("👈 Enter values in sidebar and click Predict")
+        st.info(" Enter values in sidebar and click Predict")
 
 # ── Side Info Panel ───────────────────────────────────────────
 with col2:
-    st.markdown("### 📈 Model Info")
+    st.markdown("###  Model Info")
     st.write("""
     - Algorithm: Linear Regression  
     - Accuracy (R²): **97.20%**  
@@ -110,10 +110,10 @@ with col2:
     """)
 
 # ── Expanders ─────────────────────────────────────────────────
-with st.expander("📊 View Dataset"):
+with st.expander(" View Dataset"):
     st.dataframe(df.head(20), use_container_width=True)
 
-with st.expander("📌 About Project"):
+with st.expander(" About Project"):
     st.write("""
     This project predicts customer purchase amount using Machine Learning.
     It uses Linear Regression trained on customer demographic and behavioral data.
