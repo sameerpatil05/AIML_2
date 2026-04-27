@@ -1,3 +1,6 @@
+# app.py — Customer Purchase Amount Predictor
+# Run: python -m streamlit run app.py
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -17,12 +20,6 @@ st.markdown("""
         .sub-text {
             font-size: 18px;
             color: #555;
-        }
-        .card {
-            padding: 20px;
-            border-radius: 15px;
-            background-color: #1e1e1e;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -77,8 +74,10 @@ with col1:
 
         prediction = float(np.clip(model.predict(input_df)[0], 500, 25000))
 
-        st.success(f"### 💳 ₹{prediction:,.0f}")
+        # ── Output ─────────────────────────────────────────────
+        st.success(f"### 💳 Predicted Purchase Amount: ₹{prediction:,.0f}")
 
+        # Customer Category
         if prediction >= 15000:
             category = "🔥 High Value"
         elif prediction >= 8000:
@@ -86,10 +85,16 @@ with col1:
         else:
             category = "💡 Low Value"
 
-        colA, colB, colC = st.columns(3)
+        colA, colB = st.columns(2)
         colA.metric("Customer Segment", category)
-        colB.metric("Purchase", f"₹{prediction:,.0f}")
-        colC.metric("GST (18%)", f"₹{prediction * 0.18:,.0f}")
+        colB.metric("Purchase Amount", f"₹{prediction:,.0f}")
+
+        # Input Summary
+        st.markdown("### 🧾 Input Summary")
+        st.dataframe(input_df, use_container_width=True)
+
+        # Note
+        st.caption("Note: Output varies based on input values. Example values in report are for demonstration.")
 
     else:
         st.info("👈 Enter values in sidebar and click Predict")
@@ -100,8 +105,8 @@ with col2:
     st.write("""
     - Algorithm: Linear Regression  
     - Accuracy (R²): **97.20%**  
-    - MAE: 3.34%
-    - RMSE: 4.21%  
+    - MAE: **3.34%**  
+    - RMSE: **4.21%**  
     """)
 
 # ── Expanders ─────────────────────────────────────────────────
@@ -111,5 +116,7 @@ with st.expander("📊 View Dataset"):
 with st.expander("📌 About Project"):
     st.write("""
     This project predicts customer purchase amount using Machine Learning.
+    It uses Linear Regression trained on customer demographic and behavioral data.
     Built using Python, Scikit-learn, and Streamlit.
     """)
+
