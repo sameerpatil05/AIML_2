@@ -44,7 +44,7 @@ model = train_model()
 df = load_data()
 
 # ── Header ────────────────────────────────────────────────────
-st.markdown('<div class="main-title">🛒 Customer Purchase Predictor</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title"> Customer Purchase Predictor</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-text">Predict how much a customer is likely to spend based on behavior and demographics.</div>', unsafe_allow_html=True)
 st.divider()
 
