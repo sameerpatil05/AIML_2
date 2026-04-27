@@ -49,7 +49,7 @@ st.markdown('<div class="sub-text">Predict how much a customer is likely to spen
 st.divider()
 
 # ── Sidebar Inputs ────────────────────────────────────────────
-st.sidebar.header("📥 Enter Customer Details")
+st.sidebar.header(" Enter Customer Details")
 
 age = st.sidebar.slider("Age", 18, 65, 30)
 income = st.sidebar.slider("Annual Income (LPA)", 2.0, 25.0, 8.0)
@@ -57,13 +57,13 @@ time_web = st.sidebar.slider("Time on Website (mins)", 5.0, 60.0, 25.0)
 products = st.sidebar.slider("Products Browsed", 1, 30, 15)
 discount = st.sidebar.slider("Discount Availed (%)", 0.0, 30.0, 10.0)
 
-predict_btn = st.sidebar.button("🔮 Predict")
+predict_btn = st.sidebar.button(" Predict")
 
 # ── Main Layout ───────────────────────────────────────────────
 col1, col2 = st.columns([2,1])
 
 with col1:
-    st.markdown("### 📊 Prediction Result")
+    st.markdown("###  Prediction Result")
 
     if predict_btn:
         input_df = pd.DataFrame(
