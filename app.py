@@ -112,5 +112,3 @@ with st.expander("📌 About Project"):
     This project predicts customer purchase amount using Machine Learning.
     Built using Python, Scikit-learn, and Streamlit.
     """)
-
-st.caption("🚀 Built with Streamlit | Ready for GitHub & Viva")
