@@ -100,7 +100,8 @@ with col2:
     st.write("""
     - Algorithm: Linear Regression  
     - Accuracy (R²): **97.20%**  
-    - MAE: ₹401  
+    - MAE: 3.34%
+    - RMSE: 4.21%  
     """)
 
 # ── Expanders ─────────────────────────────────────────────────
