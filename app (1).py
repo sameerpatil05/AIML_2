@@ -1,23 +1,30 @@
 # app.py — Customer Purchase Amount Predictor
 # Run: streamlit run app.py
 
-import pickle
 import numpy as np
 import pandas as pd
 import streamlit as st
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 
 st.set_page_config(page_title="Customer Purchase Predictor", page_icon="🛒")
 
 @st.cache_resource
-def load_model():
-    with open("model.pkl", "rb") as f:
-        return pickle.load(f)
+def train_model():
+    df = pd.read_csv("dataset.csv")
+    X = df[["Age","Annual_Income_LPA","Time_On_Website",
+            "Products_Browsed","Discount_Availed"]]
+    y = df["Purchase_Amount"]
+    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    return model
 
 @st.cache_data
 def load_data():
     return pd.read_csv("dataset.csv")
 
-model = load_model()
+model = train_model()
 df    = load_data()
 
 # ── Title ──────────────────────────────────────────────────────
